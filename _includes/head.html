@@ -17,6 +17,10 @@
     <meta name="HandheldFriendly" content="True">
     <meta name="robots" content="index,follow">
     <meta name="googlebot" content="index,follow">
+
+    {% if site.google-analytics %}
+      {% include google_analytics.html %}
+    {% endif %}
 	
     {% include ogp.html %}	
 	{% include twitter-meta.html %}	

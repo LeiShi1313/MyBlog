@@ -18,6 +18,9 @@ permalink:        /pages/:categories/:title
 cover:            /assets/site_under_construction.png
 disqus_shortname: "blog"
 
+# Google Analytics 
+google-analytics: 'UA-119177383-3'
+
 # Build settings
 sass:
     style: compressed
