@@ -1,0 +1,78 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/ruby:2.5.1
+    working_directory: ~/MyBlog
+    environment:
+      - JEKYLL_ENV=production
+      - NOKOGIRI_USE_SYSTEM_LIBRARIES=true
+      - BUNDLER_VERSION=2.0.1
+      - CONTINUOUS_INTEGRATION=true
+      - JOB_RESULTS_PATH=run-results
+    steps:
+      - checkout
+      - run:
+          name: "Test Markdown Files"
+          command: |
+            wget https://github.com/felicianotech/md-proofer/releases/download/v0.1.0/md-proofer-v0.1.0-linux-amd64.tar.gz
+            tar xfz md-proofer-v*.tar.gz
+            sudo chmod +x ./md-proofer
+
+            echo "Test CircleCI 2.0 Markdown files"
+            echo "===================================================================================="
+            ./md-proofer lint ./_posts/
+      - run:
+          name: "Install bundle"
+          command: gem install bundler
+      - restore_cache:
+          key: blog-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
+      - run:
+          name: Install Ruby dependencies
+          command: bundle check --path=vendor/bundle || bundle install --path=vendor/bundle --jobs=4 --retry=3
+      - save_cache:
+          key: blog-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
+          paths:
+            - "vendor/bundle"
+      - run:
+          name: Create results directory
+          command: mkdir -p $JOB_RESULTS_PATH
+      - run:
+          name: Build the Jekyll site
+          command: bundle exec jekyll build 2>&1 | tee $JOB_RESULTS_PATH/build-results.txt
+          # - run:
+          # - runame: Test with HTMLproofer
+          # - rucommand: bundle exec htmlproofer ./_site --allow-hash-href --check-favicon --check-html --disable-external --empty-alt-ignore | tee $JOB_RESULTS_PATH/htmlproofer-results.txt
+      - store_artifacts: 
+          path: /tmp/run-results
+          destination: run-results
+      - persist_to_workspace:
+          root: ~/MyBlog
+          paths:
+            - _site
+
+
+  deploy:
+    docker:
+      - image: circleci/python:2.7
+    working_directory: ~/MyBlog 
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/MyBlog
+      - run:
+          name: Deploy to gh-pages
+          command: git push origin `git subtree split --prefix _site master`:gh-pages --force
+ 
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
+
