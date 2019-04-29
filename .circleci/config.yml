@@ -68,7 +68,7 @@ jobs:
             git config user.name "ci-bot"
       - run:
           name: Deploy website to gh-pages branch
-          command: gh-pages --dist _site
+          command: gh-pages --dist _site -m "$(date -u --iso-8601=minutes) website update."
 
 workflows:
   version: 2
