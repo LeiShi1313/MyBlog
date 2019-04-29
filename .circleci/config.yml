@@ -54,42 +54,28 @@ jobs:
 
   deploy:
     docker:
-      - image: circleci/python:2.7
+      - image: node:8.10.0
     working_directory: ~/MyBlog 
     steps:
       - checkout
       - attach_workspace:
           at: ~/MyBlog
+      - run: 
+          name: Install gh-pages and configure github
+          command: |
+            npm install -g --silent gh-pages@2.0.1
+            git config user.email "bot@leishi.io"
+            git config user.name "ci-bot"
       - run:
-          name: Set up Github identityt 
-          command: git config --global user.email "me@leishi.io" && git config --global user.name "Lei Shi"
-      - run:
-          name: Remote old site files
-          command: rm -rf docs/
-      - run:
-          name: Create new site files
-          command: cp -r _site/ docs/
-      - run:
-          name: Commit new site files
-          command: git add docs && git commit -m "$(date) Website update" && git push origin master
-      - run:
-          name: DEBUG
-          command: git log
+          name: Deploy website to gh-pages branch
+          command: gh-pages --dist _site
 
 workflows:
   version: 2
   build-deploy:
     jobs:
       - build:
-          filters:
-            tags:
-              only: /^v.*/
       - deploy:
           requires:
             - build
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
 
