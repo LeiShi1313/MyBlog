@@ -2,11 +2,22 @@
 
   
     {
+        "title": "Just a test post",
+        "category": "",
+        "url": "/pages/test",
+        "tags": ["test"],
+        "date": "2019-04-29 19:55:00 +0000",
+        "language": "en"
+    },
+  
+
+  
+    {
         "title": "Theme Installation and Usage",
         "category": "Readme",
         "url": "/pages/readme/Readme",
         "tags": ["Jekyll","Theme","GitHub","Installation"],
-        "date": "2016-06-08 08:25:00 -0700",
+        "date": "2016-06-08 15:25:00 +0000",
         "language": "en"
     },
   
@@ -17,7 +28,7 @@
         "category": "Features",
         "url": "/pages/features/Features",
         "tags": ["Jekyll","Theme","GitHub","Installation"],
-        "date": "2016-06-07 03:10:00 -0700",
+        "date": "2016-06-07 10:10:00 +0000",
         "language": "en"
     },
   
@@ -28,7 +39,7 @@
         "category": "Features",
         "url": "/pages/features/YAML-Features",
         "tags": ["Jekyll","YAML","Features","Explained"],
-        "date": "2016-04-05 14:40:00 -0700",
+        "date": "2016-04-05 21:40:00 +0000",
         "language": "en"
     },
   
@@ -39,7 +50,7 @@
         "category": "Features",
         "url": "/pages/features/Content",
         "tags": ["Jekyll","Content","Demo"],
-        "date": "2016-03-05 00:00:00 -0800",
+        "date": "2016-03-05 00:00:00 +0000",
         "language": "en"
     }
   
