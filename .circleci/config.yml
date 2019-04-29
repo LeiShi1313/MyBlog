@@ -72,6 +72,9 @@ jobs:
       - run:
           name: Commit new site files
           command: git add docs && git commit -m "$(date) Website update" && git push origin master
+      - run:
+          name: DEBUG
+          command: git log
 
 workflows:
   version: 2
