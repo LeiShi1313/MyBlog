@@ -61,9 +61,18 @@ jobs:
       - attach_workspace:
           at: ~/MyBlog
       - run:
-          name: Deploy to gh-pages
-          command: git push origin `git subtree split --prefix _site master`:gh-pages --force
- 
+          name: Set up Github identityt 
+          command: git config --global user.email "me@leishi.io" && git config --global user.name "Lei Shi"
+      - run:
+          name: Remote old site files
+          command: rm -rf docs/
+      - run:
+          name: Create new site files
+          command: cp -r _site/ docs/
+      - run:
+          name: Commit new site files
+          command: git add docs && git commit -m "$(date) Website update" && git push origin master
+
 workflows:
   version: 2
   build-deploy:
@@ -73,6 +82,8 @@ workflows:
           requires:
             - build
           filters:
+            tags:
+              only: /^v.*/
             branches:
-              only: master
+              ignore: /.*/
 
