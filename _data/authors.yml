@@ -5,7 +5,7 @@ default:                                                      # Fallback if noth
   picture:      /assets/lei-shi-with-camel.jpg                # OPTIONAL: author picture
   bio:          Yet another software engineer                 # OPTIONAL: text below author name in posts
   location:     China                                         # OPTIONAL: used to display location of the author
-  website:      https://leishi.io                						  # OPTIONAL: link to the author of a post
+  website:      "https://leishi.io"              						  # OPTIONAL: link to the author of a post
   email:        me@leishi.io                                  # OPTIONAL: used in the about page
   twitter:                                                    # OPTIONAL: used in the about page
   linkedin:                                                   # OPTIONAL: used in the about page
