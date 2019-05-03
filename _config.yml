@@ -22,7 +22,7 @@ disqus_shortname: "blog"
 google-analytics: 'UA-119177383-3'
 
 # Set url for this site
-url: "https://www.leishi.io"
+url: "https://blog.leishi.io"
 
 # Build settings
 sass:
