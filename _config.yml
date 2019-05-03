@@ -13,16 +13,13 @@ keywords:         demo theme example github jekyll features
 language:         "en" # default language of the blog. Language codes: http://www.w3schools.com/tags/ref_language_codes.asp
 
 baseurl:          "" # the subpath of your site, e.g. /blog
-url:              "" # the base hostname & protocol for your site. Have a look at robots.txt as well!
+url:              "https://blog.leishi.io" # the base hostname & protocol for your site. Have a look at robots.txt as well!
 permalink:        /pages/:categories/:title
 cover:            /assets/site_under_construction.png
 disqus_shortname: "blog"
 
 # Google Analytics 
 google-analytics: 'UA-119177383-3'
-
-# Set url for this site
-url: "https://blog.leishi.io"
 
 # Build settings
 sass:
