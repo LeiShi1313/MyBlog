@@ -5,8 +5,8 @@
     <description>This is the jekyllTheme example blog. It only exists to demonstrate how the theme looks and feels.</description>
     <link>https://blog.leishi.io/</link>
     <atom:link href="https://blog.leishi.io/feed.xml" rel="self" type="application/rss+xml"/>
-      <pubDate>Fri, 03 May 2019 06:00:38 +0000</pubDate>
-    <lastBuildDate>Fri, 03 May 2019 06:00:38 +0000</lastBuildDate>
+      <pubDate>Fri, 03 May 2019 06:25:15 +0000</pubDate>
+    <lastBuildDate>Fri, 03 May 2019 06:25:15 +0000</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
     
       <item>
@@ -17,7 +17,7 @@
 
 &lt;p&gt;Let’s change some text and see how things change&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;C:\Users\Lei Shi\workspace\MyBlog\assets\mountain-alternative-cover.jpg&quot; alt=&quot;mountain-alternative-cover&quot; /&gt;&lt;/p&gt;
+&lt;div class=&quot;bg-scroll&quot; style=&quot;background-image: url('https://lh3.googleusercontent.com/J0TUtX0S31naH8I1MqqnjTS9F1lKs9ZrAhVhsq_P8SMhbMSbn7mYAj7KxcmFBm2QfICnn_yut0-v17yZ_WDxwwaj44v2JX_rEa77AWAaPJtnEue_or5QxQbZ4Ukdm_WS1x519ep6Hw=w2400')&quot;&gt;&lt;/div&gt;
 
 </description>
         <pubDate>Mon, 29 Apr 2019 19:55:00 +0000</pubDate>
