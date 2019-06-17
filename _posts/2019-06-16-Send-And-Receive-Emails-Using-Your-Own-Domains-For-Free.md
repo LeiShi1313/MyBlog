@@ -15,13 +15,14 @@ Bought you own domain? Do you want to send and receive emails with your own doma
 
 ## Now let's begin
 
+### The mailgun part
+
 The trick to send and receive emails for free is [mailgun](https://www.mailgun.com). So go to their website and signup for a new account. Your credit card won't be charged as long as the amount of your monthly emails stays in thier free cap. 
 
-![]({{ "/assets/screenshots/2019-06-16-17.19.22.png#left" | absolute_url }})
 
-Once signed up and logged into their dashboard, go to `Sending > Domains`. The dashboard should appear on the left side.
+Once signed up and logged into their dashboard, go to `Sending > Domains`. The dashboard should appear on the left side. Now click `Add New Domain` and then input your domain name and select your region.
 
-Now click `Add New Domain` and then input your domain name and select your region.
+![]({{ "/assets/screenshots/mailgun-add-domain.png" | absolute_url }})
 
 > If you want to send emails from your root domain, for example me@lowercamelcase.com, you should input lowercamelcase.com instead of mg.lowercamelcase.com though mailgun recommended so.
 
@@ -29,4 +30,24 @@ After adding your domain, follow the instructions shown on the page and go to yo
 
 Now back to the side bar and click `Receiving`, then click `Create Route`. In the `Expression Type`, select `Catch All`, enable this rule mailgun will forward all the emails send to `*@lowercamelcase.com`. In the forward section, simply add the email address you are going to receive.
 
+![]({{ "/assets/screenshots/mailgun-add-route.png" | absolute_url }})
 
+Once you created the route, you should be able to receive emails by your domain, try and send one to verify!
+
+### The gmail part
+
+> The following should also applied to other email service as long as they provide support for importting other SMTP accounts.
+
+Inside the gmail, go to `Settings > Accounts` and find a section named `Send mail as`. Click `Add another email address`.
+
+![]({{ "/assets/screenshots/send-mail-as.png" | absolute_url }})
+
+In the popup, input your name and custom domain email address, remember to uncheck `Treat as an alias`.
+
+![]({{ "/assets/screenshots/add-account.png" | absolute_url }})
+
+Click `Next Step`, then input mailgun's SMTP server address and port as shown, and input your custom domain email address and password, you should be able to get that after domain verification. If you don't, in mailgun, go to `Sending > Domain Settings > SMTP credentials`.
+
+![]({{ "/assets/screenshots/add-smtp.png" | absolute_url }})
+
+Now you're all set! Try compose a new email and you will see a dropdown in the `From` which will alow you to send with another email address inside gmail, hooray!
