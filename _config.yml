@@ -8,7 +8,7 @@ language:         "en" # default language of the blog. Language codes: http://ww
 baseurl:          "" # the subpath of your site, e.g. /blog
 url:              "https://blog.leishi.io" # the base hostname & protocol for your site. Have a look at robots.txt as well!
 permalink:        /pages/:categories/:title
-cover:            /assets/site_under_construction.png
+cover:            /assets/machu-picchu.jpg
 disqus_shortname: "blog"
 
 # Google Analytics 
