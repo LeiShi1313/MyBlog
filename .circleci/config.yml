@@ -24,7 +24,7 @@ jobs:
             ./md-proofer lint ./_posts/
       - run:
           name: "Update gem"
-          command: sudo gemupdate --system
+          command: sudo gem update --system
       - run:
           name: "Install bundle"
           command: gem install bundler
