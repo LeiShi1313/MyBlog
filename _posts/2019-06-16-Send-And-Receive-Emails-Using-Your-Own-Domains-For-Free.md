@@ -1,9 +1,10 @@
 ---
 layout:            post
 title:             "Send and Receive Emails Using Your Own Domains For Free"
-date:              2016-06-14 17:00:00 -0700
+date:              2019-06-14 17:00:00 -0700
 tags:              Email Domain
 category:          Readme
+featured:          true
 ---
 
 Bought you own domain? Do you want to send and receive emails with your own domain name? There are a couple of options out there, [G Suite](https://gsuite.google.com) for a minimun of $5/mo, or [zoho](https://www.zoho.com) will be cheaper for $1/mo, or maybe your domain provider will also provide support for email hosting, ranging from $2/mo to $5/mo. Excluding from serving your own eamil server, if you want a reliable email servie with your custom domain, there aren't a lot of choices there. Today, I will a way that you can send and receive emails with your own domain, and for totally free.
