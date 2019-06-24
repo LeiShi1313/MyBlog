@@ -5,8 +5,8 @@
     <description>This is the jekyllTheme example blog. It only exists to demonstrate how the theme looks and feels.</description>
     <link>https://blog.leishi.io/</link>
     <atom:link href="https://blog.leishi.io/feed.xml" rel="self" type="application/rss+xml"/>
-      <pubDate>Tue, 18 Jun 2019 17:46:27 +0000</pubDate>
-    <lastBuildDate>Tue, 18 Jun 2019 17:46:27 +0000</lastBuildDate>
+      <pubDate>Mon, 24 Jun 2019 00:39:04 +0000</pubDate>
+    <lastBuildDate>Mon, 24 Jun 2019 00:39:04 +0000</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
     
       <item>
@@ -62,7 +62,7 @@
 
 &lt;p&gt;Now you’re all set! Try compose a new email and you will see a dropdown in the &lt;code&gt;From&lt;/code&gt; which will alow you to send with another email address inside gmail, hooray!&lt;/p&gt;
 </description>
-        <pubDate>Wed, 15 Jun 2016 00:00:00 +0000</pubDate>
+        <pubDate>Sat, 15 Jun 2019 00:00:00 +0000</pubDate>
         <link>https://blog.leishi.io/pages/readme/Send-And-Receive-Emails-Using-Your-Own-Domains-For-Free</link>
         <guid isPermaLink="true">https://blog.leishi.io/pages/readme/Send-And-Receive-Emails-Using-Your-Own-Domains-For-Free</guid>
         
