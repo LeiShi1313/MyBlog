@@ -4,3 +4,5 @@
 vendor
 .bundle
 _site
+.idea
+.vscode
