@@ -1,12 +1,24 @@
 ---
 layout:    about
 permalink: "/about"
-author:    lei
-keywords:  about person demo example
-title:     About Jekyll Decent
+keywords:  about
+title:     About Lei Shi
 menutitle: About
 weight:    90
-excerpt:   This page contains the curriculum vitae (CV) of the author.
+excerpt:   This page contains some information about the author.
 --- 
-<script async defer src="https://buttons.github.io/buttons.js"></script>
 
+Congratulations! You just found another personal page written by a software engineer.
+
+There is nothing here but my two little kittens.
+
+<div style="overflow: hidden; display: flex; justify-content:space-around;">
+    <img style="max-width: 40%;padding:5px"
+      src="{{site.url}}/assets/xigua.jpg" />
+    <img style="max-width: 40%;padding:5px"
+      src="{{site.url}}/assets/caomei.jpg" />
+</div>
+
+Oh, you are saying me? I'm just an ordinary software engineer you'd probably come across the internet everyday given the truth that you clicked into my site.
+
+Or you can go to my [blog](https://blog.leishi.io/) to see if there is some thing interest.

@@ -1,51 +1,32 @@
-default:                                                      # Fallback if nothing is specified
-  initial:      lei                                           # used for author lookup in posts and for first two characters in the about page back button
-  name:         "Lei Shi"                                     # used to display author name
-  cover:        /assets/mountain-alternative-cover.jpg        # OPTIONAL: defines location of cover image in about page
-  picture:      /assets/lei-shi-with-camel.jpg                # OPTIONAL: author picture
-  bio:          Yet another software engineer                 # OPTIONAL: text below author name in posts
-  location:     China                                         # OPTIONAL: used to display location of the author
-  website:      "https://leishi.io"              						  # OPTIONAL: link to the author of a post
-  email:        me@leishi.io                                  # OPTIONAL: used in the about page
-  twitter:                                                    # OPTIONAL: used in the about page
-  linkedin:                                                   # OPTIONAL: used in the about page
-  xing:                                                       # OPTIONAL: used in the about page
-  github:       leishi1313                                    # OPTIONAL: used in the about page
-  stackoverflow:                                              # OPTIONAL: used in the about page
-  facebook:                                                   # OPTIONAL: used in the about page
-  gplus:                                                      # OPTIONAL: used in the about page
-  soundcloud:                                                 # OPTIONAL: used in the about page
-  youtube:                                                    # OPTIONAL: used in the about page
-  pinterest:                                                  # OPTIONAL: used in the about page
-  dribble:                                                    # OPTIONAL: used in the about page
-  behance:                                                    # OPTIONAL: used in the about page
-  spotify:                                                    # OPTIONAL: used in the about page
-  twitch:                                                     # OPTIONAL: used in the about page
-  s500px:                                                     # OPTIONAL: used in the about page
-  reddit:                                                     # OPTIONAL: used in the about page
-jdecent:
-  initial:      jdecent
-  name:         "Jekyll Decent"       
-  cover:        /assets/mountain-alternative-cover.jpg  
-  picture:      /assets/johndoe.jpg  
-  bio:          This is my bio!
-  location:     Germany
-  email:        "-"   
-  twitter:      "-"    
-  twitch:       "-"
-jwillmer:
-  initial:      jwillmer
-  name:         "Jens Willmer"        
-  picture:      /assets/jwillmer.jpg  
-  bio:          All about technology 
-  location:     Germany 
-  website:      "http://jwillmer.de/cv" 
-  twitter:      jenswillmer
-  github:       jwillmer
+default:                                                      
+  initial:      lei
+  name:         "Lei Shi"
+  cover:        /assets/mountain-alternative-cover.jpg
+  picture:      /assets/profile.jpg
+  bio:          Yet another software engineer
+  location:     China
+  website:      "https://leishi.io"
+  email:        me@leishi.io
+  twitter:                                                    
+  linkedin:                                                   
+  xing:                                                       
+  github:       leishi1313                                    
+  stackoverflow:                                              
+  facebook:                                                   
+  gplus:                                                      
+  soundcloud:                                                 
+  youtube:                                                    
+  pinterest:                                                  
+  dribble:                                                    
+  behance:                                                    
+  spotify:                                                    
+  twitch:                                                     
+  s500px:                                                     
+  reddit:                                                     
 lei:
   initial:      lei
   name:         "Lei Shi"
-  picture:      /assets/lei-shi-with-camel.jpg
+  picture:      /assets/profile.jpg
   bio:          Yet another software engineer
   location:     China
   email:        me@leishi.io
