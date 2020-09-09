@@ -68,7 +68,12 @@ featured:          true
 }
 ```
 
-最重要的几个变化是添加`"stats: {}"`和`"api": {"tag": "api", "services": ["StatsService"]},`，以及在`inbounds`里添加一个`tag`为`api`的`dokodemo-door`，端口可以任意，记着后面要用，然后在`routing`里把`inputTag`为`api`的流量设置`outpuTag`。`policy`的`levels`需要添加所有用户的`level`(上述例子里只开启了`level`为`0`的流量统计功能)
+最重要的几个变化是：
+- 添加`"stats: {}"`和`"api": {"tag": "api", "services": ["StatsService"]},`
+- 在`inbounds`里添加一个`tag`为`api`的`dokodemo-door`，端口可以任意，记着后面要用
+- 在`routing`里把`inputTag`为`api`的流量设置`outpuTag`
+- `policy`的`levels`需要添加所有用户的`level`(上述例子里只开启了`level`为`0`的流量统计功能)
+- **非常重要**：每个inbound设置一个`tag`，每个`client`设置好email
 
 > 完成设置后可以通过`v2ctl api --server=127.0.0.1:10085 StatsService.QueryStats 'pattern: "" reset: false'`来验证流量统计是否开启
 
