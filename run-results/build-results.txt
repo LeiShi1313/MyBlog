@@ -1,6 +1,0 @@
-Configuration file: /home/circleci/MyBlog/_config.yml
-            Source: /home/circleci/MyBlog
-       Destination: /home/circleci/MyBlog/_site
- Incremental build: disabled. Enable with --incremental
-      Generating... 
-       Jekyll Feed: Generating feed for posts

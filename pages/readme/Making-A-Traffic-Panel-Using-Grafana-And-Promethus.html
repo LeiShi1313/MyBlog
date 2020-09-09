@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+   <meta charset="utf-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>利用Grafana和Promethus搭建流量统计面板</title>
+   <meta name="description" content="本文将教你如何用Grafana和Promethus搭配订制的node-exporter搭建一个用于统计V2ray和iptables端口转发流量的面板，最终效果如下：">
+   <meta name="keywords" content="Grafana, Promethus, V2ray, Iptables" />
+   <meta name="HandheldFriendly" content="True">
+   <meta name="robots" content="index,follow">
+   <meta name="googlebot" content="index,follow">
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-119177383-3"></script>
+  <script>
+      window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+gtag('config', 'UA-119177383-3');
+</script>
+	<meta property="og:title" content="利用Grafana和Promethus搭建流量统计面板" />
+	<meta property="og:type" content="article" />
+<meta property="og:image" content="https://blog.leishi.io/assets/machu-picchu.jpg" />
+<meta property="og:site_name" content="Lei Shi&#39;s Blog" />
+<meta property="og:description" content="本文将教你如何用Grafana和Promethus搭配订制的node-exporter搭建一个用于统计V2ray和iptables端口转发流量的面板，最终效果如下：" />
+<meta property="og:url" content="https://blog.leishi.io/pages/readme/Making-A-Traffic-Panel-Using-Grafana-And-Promethus" />
+	<meta property="article:author" content="https://leishi.io" />
+	<link rel="author" href="https://leishi.io" />
+<meta property="article:published_time" content="2020-08-08T20:00:00-07:00" />
+<meta property="article:tag" content="Grafana" />
+<meta property="article:tag" content="Promethus" />
+<meta property="article:tag" content="V2ray" />
+<meta property="article:tag" content="Iptables" />
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="利用Grafana和Promethus搭建流量统计面板">
+<meta name="twitter:url" content="https://blog.leishi.io/">
+<meta name="twitter:description" content="本文将教你如何用Grafana和Promethus搭配订制的node-exporter搭建一个用于统计V2ray和iptables端口转发流量的面板，最终效果如下：">
+<meta name="twitter:image:src" content="https://blog.leishi.io/assets/machu-picchu.jpg">
+  <link rel="stylesheet" href="https://blog.leishi.io/css/screen.css">
+  <link rel="alternate" type="application/rss+xml" title="Lei Shi's Blog" href="https://blog.leishi.io/feed.xml">
+  <link rel="icon" href="https://blog.leishi.io/assets/favicon-16.png" sizes="16x16" type="image/png">
+  <link rel="icon" href="https://blog.leishi.io/assets/favicon-32.png" sizes="32x32" type="image/png">
+</head>
+<body class="home-template">
+   <div class="site-wrapper">
+<header class="main-header detail-page image-bg  has-cover" style="background-image: url(https://blog.leishi.io/assets/machu-picchu.jpg)" >
+    <!--
+   <h1 class="page-title"><a href="https://blog.leishi.io/" title="Lei Shi's Blog">Lei Shi's Blog</a></h1>
+   <h2 class="page-description">Example Blog</h2>
+    -->
+   <div class="nav">
+            <a class="page-link" href="https://blog.leishi.io/" title="Home">Home</a>
+            <a class="page-link" href="https://blog.leishi.io/offline-warning/" title="Offline">Offline</a>
+            <a class="page-link" href="https://blog.leishi.io/about" title="About">About</a>
+   </div>
+</header>
+       <main class="content" role="main">
+   <article class="post single-post" itemscope itemtype="http://schema.org/BlogPosting">
+      <header class="post-header short-diver">
+           <h1 class="post-title" itemprop="name headline">利用Grafana和Promethus搭建流量统计面板</h1>
+           <section class="post-meta">
+                <time datetime="2020-08-08T20:00:00-07:00" itemprop="datePublished">Aug 8, 2020</time>
+           </section>
+       </header>
+       <section class="post-content short-diver" itemprop="articleBody">
+           <p>本文将教你如何用Grafana和Promethus搭配订制的node-exporter搭建一个用于统计V2ray和iptables端口转发流量的面板，最终效果如下：
+<img src="https://blog.leishi.io/assets/2020-08-08/v2ray_dashboard_slim.png" alt="" /></p>
+<h2 id="准备工作">准备工作</h2>
+<h3 id="开启v2ray统计功能">开启V2ray统计功能</h3>
+<p>修改V2ray的配置文件，一般位于<code>/etc/v2ray/config.json</code>或<code>/usr/local/etc/v2ray/config.json</code>，添加如下几行配置：</p><pre><code>{
+  ...
+  "stats": {},
+  "api": {
+    "tag": "api",
+    "services": ["StatsService"]
+  },
+  "policy": {
+    "levels": {
+      "0": {
+        "statsUserUplink": true,
+        "statsUserDownlink": true
+      }
+    },
+    "system": {
+      "statsInboundUplink": true,
+      "statsInboundDownlink": true
+    }
+  },
+  "inbounds": [
+    ...
+    {
+      "port": 10085,
+      "protocol": "dokodemo-door",
+      "settings": {
+        "address": "127.0.0.1"
+      },
+      "tag": "api"
+    }
+    ...
+  ],
+  "routing": {
+    "settings":{
+      "rules": [
+        ...
+        {
+          "inboundTag":[
+            "api"
+          ],
+          "outboundTag":"api",
+          "type":"field"
+        }
+        ...
+      ],
+      ...
+    },
+    ...
+  }
+}
+</code></pre>
+<p>最重要的几个变化是添加<code>"stats: {}"</code>和<code>"api": {"tag": "api", "services": ["StatsService"]},</code>，以及在<code>inbounds</code>里添加一个<code>tag</code>为<code>api</code>的<code>dokodemo-door</code>，端口可以任意，记着后面要用，然后在<code>routing</code>里把<code>inputTag</code>为<code>api</code>的流量设置<code>outpuTag</code>。<code>policy</code>的<code>levels</code>需要添加所有用户的<code>level</code>(上述例子里只开启了<code>level</code>为<code>0</code>的流量统计功能)</p>
+<blockquote>
+ <p>完成设置后可以通过<code>v2ctl api --server=127.0.0.1:10085 StatsService.QueryStats 'pattern: "" reset: false'</code>来验证流量统计是否开启</p>
+</blockquote>
+<blockquote>
+ <p>更多有关v2ray开启流量统计的设置可以参考<a href="https://guide.v2fly.org/advanced/traffic.html#%E6%B5%81%E9%87%8F%E7%BB%9F%E8%AE%A1">V2ray 白话文指南</a></p>
+</blockquote>
+<h3 id="开启iptables转发端口的流量统计">开启iptables转发端口的流量统计</h3>
+<p>首先先确定你的iptables端口转发是通过<code>SNAT/DNAT</code>来实现，如果没有的话，可以参考<strong>TODO</strong>自己添加统计功能。查看iptables的配置确认一下大概会看起来像这样：</p><pre><code>&gt; iptables -t nat -L
+Chain PREROUTING (policy ACCEPT)
+target     prot opt source               destination
+DNAT       tcp  --  anywhere             anywhere             tcp dpt:11111 to:8.8.8.8:10000
+
+Chain INPUT (policy ACCEPT)
+target     prot opt source               destination
+
+Chain OUTPUT (policy ACCEPT)
+target     prot opt source               destination
+
+Chain POSTROUTING (policy ACCEPT)
+target     prot opt source               destination
+SNAT       tcp  --  anywhere             8.8.8.8      tcp dpt:10000 to:192.168.1.1
+</code></pre>
+<p>定义本地端口为<code>PORT</code>，远端IP为<code>REMOTE_IP</code>，远端端口为<code>REMOTE_PORT</code>，再添加如下两条iptables规则：</p><pre><code>&gt; iptables -A FORWARD -p tcp -d REMOTE_IP --dport REMOTE_PORT -j ACCEPT -m comment --comment "UPLOAD PORT-&gt;REMOTE_IP:REMOTE_PORT"
+&gt; iptables -A FORWARD -p tcp -s REMOTE_IP -j ACCEPT -m comment --comment "DOWNLOAD PORT-&gt;REMOTE_IP:REMOTE_PORT"
+</code></pre>
+<p><code>--comment</code>里的内容特别重要，是用来区分流量的唯一依据，你也可以使用<a href="https://github.com/LeiShi1313/v2ray-iptables-exporter/blob/master/forward.sh">这个</a>脚本来添加端口转发，这个脚本会自动添加上述两条规则，用法：</p><pre><code>&gt; bash forward.sh PORT REMOTE_IP REMOTE_PORT
+</code></pre>
+<p>检查一下统计功能：</p><pre><code>&gt; iptables -nxvL
+Chain INPUT (policy ACCEPT 19366 packets, 15977101 bytes)
+    pkts      bytes target     prot opt in     out     source               destination
+
+Chain FORWARD (policy ACCEPT 0 packets, 0 bytes)
+    pkts      bytes target     prot opt in     out     source               destination
+     223    11604 ACCEPT     tcp  --  *      *       0.0.0.0/0            8.8.8.8      tcp dpt:10000 /* UPLOAD 11111-&gt;8.8.8.8:10000 */
+     146     7600 ACCEPT     tcp  --  *      *       8.8.8.8      0.0.0.0/0            /* DOWNLOAD 11111-&gt;8.8.8.8:10000 */
+
+Chain OUTPUT (policy ACCEPT 15543 packets, 9129206 bytes)
+    pkts      bytes target     prot opt in     out     source               destination
+</code></pre>
+<p>注意<code>bytes</code>这一栏是不是大于零（如果本来就没有流量的话，可以telent一下这个端口）,和注释里的端口/IP是否正确</p>
+<h2 id="安装promethus-node-exporter">安装Promethus node exporter</h2>
+<p>这是最简单的部分，因为我已经写好了，直接根据自己的平台到<a href="">这里</a>下载对应的binary，运行就可以了：</p>
+<blockquote>
+ <p>注意这些操作都需要在root下运行</p>
+</blockquote><pre><code>&gt; wget -O /tmp/v2ray-iptables-exporter https://github.com/LeiShi1313/v2ray-iptables-exporter/releases/download/v0.5.0/v2ray-iptables-exporter_linux_386
+&gt; mv /tmp/v2ray-iptables-exporter /usr/local/bin
+&gt; chmod +x /tmp/v2ray-iptables-exporter
+&gt; nohup v2ray-iptables-exporter &gt; /dev/null 2&gt;&amp;1 &amp;
+</code></pre>
+<p>测试一下node exporter是否正常运行：</p><pre><code>&gt; curl localhost:9550
+&lt;html&gt;
+&lt;head&gt;&lt;title&gt;V2Ray Exporter&lt;/title&gt;&lt;/head&gt;
+&lt;body&gt;
+&lt;h1&gt;V2Ray Exporter dev&lt;/h1&gt;
+&lt;p&gt;&lt;a href='/metrics'&gt;Exporter Metrics&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href='/scrape'&gt;Scrape V2Ray Metrics&lt;/a&gt;&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<h3 id="利用systemd更科学地管理node-exporter">利用systemd更科学地管理node exporter</h3><pre><code>&gt; cat &gt; /etc/systemd/system/v2ray-iptables-exporter.service &lt;&lt;EOF
+[Unit]
+Description=V2ray Iptables Traffic Exporter
+
+[Service]
+User=root
+ExecStart=/usr/local/bin/v2ray-iptables-exporter --v2ray-endpoint 127.0.0.1:10085
+
+[Install]
+WantedBy=multi-user.target
+EOF
+&gt; systemctl daemon-reload
+&gt; systemctl enable v2ray-iptables-exporter
+&gt; systemctl start v2ray-iptables-exporter
+</code></pre>
+<h2 id="grafana--promethus">Grafana &amp; Promethus</h2>
+<h3 id="启动服务">启动服务</h3>
+<p>这一步也比较简单，使用docker-compose up -d就可以了，<code>docker-compose.yml</code>我也<a href="https://github.com/LeiShi1313/docker-composes/tree/master/grafana_promethus">写好了</a></p><pre><code>&gt; git clone https://github.com/LeiShi1313/docker-composes.git
+&gt; cd docker-composes/grafana_promethus
+</code></pre>
+<p>首先编辑下<code>promethus.yml</code>:</p><pre><code>global:
+  scrape_interval: 10s
+
+- job_name: v2ray
+  metrics_path: /scrape
+  static_configs:
+  - targets: ['**被监控的服务器IP地址**:9550']
+  - targets: ['**被监控的另一台服务器IP地址**:9550']
+</code></pre>
+<p>然后<code>docker-compose up -d</code>就可以了，打开浏览器看看<strong>Grafana服务器IP</strong>:3000有没有起来，然后用<code>admin</code>/<code>admin</code>登录就可以了。</p>
+<h3 id="添加流量统计面板">添加流量统计面板</h3>
+<p>首先添加一个面板，<code>+</code>-&gt;<code>Import</code>：
+<img src="https://blog.leishi.io/assets/2020-08-08/grafana_import.png" alt="" /></p>
+<p>然后在<code>Import via panel json</code>里复制粘贴<a href="https://github.com/LeiShi1313/v2ray-iptables-exporter/blob/master/dashboard.json">这里</a>的内容，随便起个名字，点击<code>Import</code>就可以了</p>
+<h2 id="进阶玩法">进阶玩法</h2>
+<h3 id="添加离线报警超速警告">添加离线报警，超速警告</h3>
+<p><a href="./404.html">TODO</a></p>
+<h3 id="监控socatgost等等">监控socat，gost等等</h3>
+<p><a href="./404.html">TODO</a></p>
+       </section>
+       <footer class="post-footer">
+           <div itemprop="author" itemscope itemtype="http://schema.org/Person">
+</div>
+       </footer>
+   </article>
+</main>
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+   <div class="pswp__bg"></div>
+   <div class="pswp__scroll-wrap">
+       <div class="pswp__container">
+           <div class="pswp__item"></div>
+           <div class="pswp__item"></div>
+           <div class="pswp__item"></div>
+       </div>
+       <div class="pswp__ui pswp__ui--hidden">
+           <div class="pswp__top-bar">
+               <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+               <div class="pswp__preloader">
+                   <div class="pswp__preloader__icn">
+                       <div class="pswp__preloader__cut">
+                           <div class="pswp__preloader__donut"></div>
+                       </div>
+                   </div>
+               </div>
+           </div>
+           <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+               <div class="pswp__share-tooltip"></div>
+           </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)"></button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button>
+           <div class="pswp__caption">
+               <div class="pswp__caption__center"></div>
+           </div>
+       </div>
+   </div>
+</div>
+<script type="text/javascript">
+var config = {
+  'disqus_shortname': 'blog'
+};
+</script>
+<script src="https://blog.leishi.io/js/jquery-1.12.0.min.js"></script>
+<script src="https://blog.leishi.io/js/jquery.fitvids.js"></script>
+<script src="https://blog.leishi.io/js/prism.js"></script>
+<script src="https://blog.leishi.io/js/photoswipe.js"></script>
+<script src="https://blog.leishi.io/js/photoswipe-ui-default.js"></script>
+<script src="https://blog.leishi.io/js/post.js"></script>
+       <footer class="site-footer">
+    <button class="go-to-top"></button>
+   <p class="copyright"><a href="https://blog.leishi.io/" title="Lei Shi's Blog">Lei Shi's Blog</a> &copy; 2020 | <a href="https://blog.leishi.io/feed.xml" title="RSS Feed">RSS Feed</a></p>
+   <p class="poweredby">powered by <a href="https://jekyllrb.com/" title="Jekyll">Jekyll</a> with the <a href="https://github.com/jwillmer/jekyllDecent" title="jekyllDecent Theme">jekyllDecent</a> theme</p>
+</footer>
+   </div>
+</body>
+<script src="https://blog.leishi.io/js/global.js"></script>
+</html>
