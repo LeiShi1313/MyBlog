@@ -115,7 +115,14 @@ gtag('config', 'UA-119177383-3');
   }
 }
 </code></pre>
-<p>最重要的几个变化是添加<code>"stats: {}"</code>和<code>"api": {"tag": "api", "services": ["StatsService"]},</code>，以及在<code>inbounds</code>里添加一个<code>tag</code>为<code>api</code>的<code>dokodemo-door</code>，端口可以任意，记着后面要用，然后在<code>routing</code>里把<code>inputTag</code>为<code>api</code>的流量设置<code>outpuTag</code>。<code>policy</code>的<code>levels</code>需要添加所有用户的<code>level</code>(上述例子里只开启了<code>level</code>为<code>0</code>的流量统计功能)</p>
+<p>最重要的几个变化是：</p>
+<ul>
+ <li>添加<code>"stats: {}"</code>和<code>"api": {"tag": "api", "services": ["StatsService"]},</code></li>
+ <li>在<code>inbounds</code>里添加一个<code>tag</code>为<code>api</code>的<code>dokodemo-door</code>，端口可以任意，记着后面要用</li>
+ <li>在<code>routing</code>里把<code>inputTag</code>为<code>api</code>的流量设置<code>outpuTag</code></li>
+ <li><code>policy</code>的<code>levels</code>需要添加所有用户的<code>level</code>(上述例子里只开启了<code>level</code>为<code>0</code>的流量统计功能)</li>
+ <li><strong>非常重要</strong>：每个inbound设置一个<code>tag</code>，每个<code>client</code>设置好email</li>
+</ul>
 <blockquote>
  <p>完成设置后可以通过<code>v2ctl api --server=127.0.0.1:10085 StatsService.QueryStats 'pattern: "" reset: false'</code>来验证流量统计是否开启</p>
 </blockquote>

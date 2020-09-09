@@ -5,8 +5,8 @@
     <description>This is the jekyllTheme example blog. It only exists to demonstrate how the theme looks and feels.</description>
     <link>https://blog.leishi.io/</link>
     <atom:link href="https://blog.leishi.io/feed.xml" rel="self" type="application/rss+xml"/>
-      <pubDate>Wed, 09 Sep 2020 00:26:52 -0700</pubDate>
-    <lastBuildDate>Wed, 09 Sep 2020 00:26:52 -0700</lastBuildDate>
+      <pubDate>Wed, 09 Sep 2020 00:49:59 -0700</pubDate>
+    <lastBuildDate>Wed, 09 Sep 2020 00:49:59 -0700</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
     
       <item>
@@ -71,7 +71,14 @@
 }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;最重要的几个变化是添加&lt;code&gt;&quot;stats: {}&quot;&lt;/code&gt;和&lt;code&gt;&quot;api&quot;: {&quot;tag&quot;: &quot;api&quot;, &quot;services&quot;: [&quot;StatsService&quot;]},&lt;/code&gt;，以及在&lt;code&gt;inbounds&lt;/code&gt;里添加一个&lt;code&gt;tag&lt;/code&gt;为&lt;code&gt;api&lt;/code&gt;的&lt;code&gt;dokodemo-door&lt;/code&gt;，端口可以任意，记着后面要用，然后在&lt;code&gt;routing&lt;/code&gt;里把&lt;code&gt;inputTag&lt;/code&gt;为&lt;code&gt;api&lt;/code&gt;的流量设置&lt;code&gt;outpuTag&lt;/code&gt;。&lt;code&gt;policy&lt;/code&gt;的&lt;code&gt;levels&lt;/code&gt;需要添加所有用户的&lt;code&gt;level&lt;/code&gt;(上述例子里只开启了&lt;code&gt;level&lt;/code&gt;为&lt;code&gt;0&lt;/code&gt;的流量统计功能)&lt;/p&gt;
+&lt;p&gt;最重要的几个变化是：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;添加&lt;code&gt;&quot;stats: {}&quot;&lt;/code&gt;和&lt;code&gt;&quot;api&quot;: {&quot;tag&quot;: &quot;api&quot;, &quot;services&quot;: [&quot;StatsService&quot;]},&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;在&lt;code&gt;inbounds&lt;/code&gt;里添加一个&lt;code&gt;tag&lt;/code&gt;为&lt;code&gt;api&lt;/code&gt;的&lt;code&gt;dokodemo-door&lt;/code&gt;，端口可以任意，记着后面要用&lt;/li&gt;
+  &lt;li&gt;在&lt;code&gt;routing&lt;/code&gt;里把&lt;code&gt;inputTag&lt;/code&gt;为&lt;code&gt;api&lt;/code&gt;的流量设置&lt;code&gt;outpuTag&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;policy&lt;/code&gt;的&lt;code&gt;levels&lt;/code&gt;需要添加所有用户的&lt;code&gt;level&lt;/code&gt;(上述例子里只开启了&lt;code&gt;level&lt;/code&gt;为&lt;code&gt;0&lt;/code&gt;的流量统计功能)&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;非常重要&lt;/strong&gt;：每个inbound设置一个&lt;code&gt;tag&lt;/code&gt;，每个&lt;code&gt;client&lt;/code&gt;设置好email&lt;/li&gt;
+&lt;/ul&gt;
 
 &lt;blockquote&gt;
   &lt;p&gt;完成设置后可以通过&lt;code&gt;v2ctl api --server=127.0.0.1:10085 StatsService.QueryStats 'pattern: &quot;&quot; reset: false'&lt;/code&gt;来验证流量统计是否开启&lt;/p&gt;
