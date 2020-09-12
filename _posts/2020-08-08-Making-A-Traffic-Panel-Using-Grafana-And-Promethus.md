@@ -39,6 +39,7 @@ featured:          true
   "inbounds": [
     ...
     {
+      "listen": "127.0.0.1",
       "port": 10085,
       "protocol": "dokodemo-door",
       "settings": {
@@ -136,7 +137,7 @@ Chain OUTPUT (policy ACCEPT 15543 packets, 9129206 bytes)
 ```
 > wget -O /tmp/v2ray-iptables-exporter https://github.com/LeiShi1313/v2ray-iptables-exporter/releases/download/v0.5.0/v2ray-iptables-exporter_linux_386
 > mv /tmp/v2ray-iptables-exporter /usr/local/bin
-> chmod +x /tmp/v2ray-iptables-exporter
+> chmod +x /usr/local/bin/v2ray-iptables-exporter
 > nohup v2ray-iptables-exporter > /dev/null 2>&1 &
 ```
 
@@ -160,6 +161,8 @@ Chain OUTPUT (policy ACCEPT 15543 packets, 9129206 bytes)
 > cat > /etc/systemd/system/v2ray-iptables-exporter.service <<EOF
 [Unit]
 Description=V2ray Iptables Traffic Exporter
+After=network-online.target
+Wants=network-online.target
 
 [Service]
 User=root
