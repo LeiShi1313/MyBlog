@@ -5,8 +5,8 @@
     <description>This is the jekyllTheme example blog. It only exists to demonstrate how the theme looks and feels.</description>
     <link>https://blog.leishi.io/</link>
     <atom:link href="https://blog.leishi.io/feed.xml" rel="self" type="application/rss+xml"/>
-      <pubDate>Wed, 09 Sep 2020 00:53:39 -0700</pubDate>
-    <lastBuildDate>Wed, 09 Sep 2020 00:53:39 -0700</lastBuildDate>
+      <pubDate>Sat, 12 Sep 2020 00:06:49 -0700</pubDate>
+    <lastBuildDate>Sat, 12 Sep 2020 00:06:49 -0700</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
     
       <item>
@@ -42,6 +42,7 @@
   &quot;inbounds&quot;: [
     ...
     {
+      &quot;listen&quot;: &quot;127.0.0.1&quot;,
       &quot;port&quot;: 10085,
       &quot;protocol&quot;: &quot;dokodemo-door&quot;,
       &quot;settings&quot;: {
@@ -140,7 +141,7 @@ Chain OUTPUT (policy ACCEPT 15543 packets, 9129206 bytes)
 
 &lt;pre&gt;&lt;code&gt;&amp;gt; wget -O /tmp/v2ray-iptables-exporter https://github.com/LeiShi1313/v2ray-iptables-exporter/releases/download/v0.5.0/v2ray-iptables-exporter_linux_386
 &amp;gt; mv /tmp/v2ray-iptables-exporter /usr/local/bin
-&amp;gt; chmod +x /tmp/v2ray-iptables-exporter
+&amp;gt; chmod +x /usr/local/bin/v2ray-iptables-exporter
 &amp;gt; nohup v2ray-iptables-exporter &amp;gt; /dev/null 2&amp;gt;&amp;amp;1 &amp;amp;
 &lt;/code&gt;&lt;/pre&gt;
 
@@ -161,6 +162,8 @@ Chain OUTPUT (policy ACCEPT 15543 packets, 9129206 bytes)
 &lt;pre&gt;&lt;code&gt;&amp;gt; cat &amp;gt; /etc/systemd/system/v2ray-iptables-exporter.service &amp;lt;&amp;lt;EOF
 [Unit]
 Description=V2ray Iptables Traffic Exporter
+After=network-online.target
+Wants=network-online.target
 
 [Service]
 User=root
