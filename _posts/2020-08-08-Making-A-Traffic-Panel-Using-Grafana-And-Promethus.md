@@ -135,10 +135,10 @@ Chain OUTPUT (policy ACCEPT 15543 packets, 9129206 bytes)
 > 注意这些操作都需要在root下运行
 
 ```
-> wget -O /tmp/v2ray-iptables-exporter https://github.com/LeiShi1313/v2ray-iptables-exporter/releases/download/v0.5.0/v2ray-iptables-exporter_linux_386
-> mv /tmp/v2ray-iptables-exporter /usr/local/bin
-> chmod +x /usr/local/bin/v2ray-iptables-exporter
-> nohup v2ray-iptables-exporter > /dev/null 2>&1 &
+> wget -O /tmp/net-traffic-exporter https://github.com/LeiShi1313/net-traffic-exporter/releases/download/v0.6.2/net-traffic-exporter_linux_amd64
+> mv /tmp/net-traffic-exporter /usr/local/bin
+> chmod +x /usr/local/bin/net-traffic-exporter
+> nohup net-traffic-exporter > /dev/null 2>&1 &
 ```
 
 
@@ -158,7 +158,7 @@ Chain OUTPUT (policy ACCEPT 15543 packets, 9129206 bytes)
 ### 利用systemd更科学地管理node exporter
 
 ```
-> cat > /etc/systemd/system/v2ray-iptables-exporter.service <<EOF
+> cat > /etc/systemd/system/net-traffic-exporter.service <<EOF
 [Unit]
 Description=V2ray Iptables Traffic Exporter
 After=network-online.target
@@ -166,14 +166,14 @@ Wants=network-online.target
 
 [Service]
 User=root
-ExecStart=/usr/local/bin/v2ray-iptables-exporter --v2ray-endpoint 127.0.0.1:10085
+ExecStart=/usr/local/bin/net-traffic-exporter --v2ray-endpoint 127.0.0.1:10085
 
 [Install]
 WantedBy=multi-user.target
 EOF
 > systemctl daemon-reload
-> systemctl enable v2ray-iptables-exporter
-> systemctl start v2ray-iptables-exporter
+> systemctl enable net-traffic-exporter
+> systemctl start net-traffic-exporter
 ```
 
 ## Grafana & Promethus
