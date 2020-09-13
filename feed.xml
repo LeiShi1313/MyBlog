@@ -5,8 +5,8 @@
     <description>This is the jekyllTheme example blog. It only exists to demonstrate how the theme looks and feels.</description>
     <link>https://blog.leishi.io/</link>
     <atom:link href="https://blog.leishi.io/feed.xml" rel="self" type="application/rss+xml"/>
-      <pubDate>Sat, 12 Sep 2020 00:06:49 -0700</pubDate>
-    <lastBuildDate>Sat, 12 Sep 2020 00:06:49 -0700</lastBuildDate>
+      <pubDate>Sun, 13 Sep 2020 01:58:24 -0700</pubDate>
+    <lastBuildDate>Sun, 13 Sep 2020 01:58:24 -0700</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
     
       <item>
@@ -139,10 +139,10 @@ Chain OUTPUT (policy ACCEPT 15543 packets, 9129206 bytes)
   &lt;p&gt;注意这些操作都需要在root下运行&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;pre&gt;&lt;code&gt;&amp;gt; wget -O /tmp/v2ray-iptables-exporter https://github.com/LeiShi1313/v2ray-iptables-exporter/releases/download/v0.5.0/v2ray-iptables-exporter_linux_386
-&amp;gt; mv /tmp/v2ray-iptables-exporter /usr/local/bin
-&amp;gt; chmod +x /usr/local/bin/v2ray-iptables-exporter
-&amp;gt; nohup v2ray-iptables-exporter &amp;gt; /dev/null 2&amp;gt;&amp;amp;1 &amp;amp;
+&lt;pre&gt;&lt;code&gt;&amp;gt; wget -O /tmp/net-traffic-exporter https://github.com/LeiShi1313/net-traffic-exporter/releases/download/v0.6.2/net-traffic-exporter_linux_amd64
+&amp;gt; mv /tmp/net-traffic-exporter /usr/local/bin
+&amp;gt; chmod +x /usr/local/bin/net-traffic-exporter
+&amp;gt; nohup net-traffic-exporter &amp;gt; /dev/null 2&amp;gt;&amp;amp;1 &amp;amp;
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;测试一下node exporter是否正常运行：&lt;/p&gt;
@@ -159,7 +159,7 @@ Chain OUTPUT (policy ACCEPT 15543 packets, 9129206 bytes)
 
 &lt;h3 id=&quot;利用systemd更科学地管理node-exporter&quot;&gt;利用systemd更科学地管理node exporter&lt;/h3&gt;
 
-&lt;pre&gt;&lt;code&gt;&amp;gt; cat &amp;gt; /etc/systemd/system/v2ray-iptables-exporter.service &amp;lt;&amp;lt;EOF
+&lt;pre&gt;&lt;code&gt;&amp;gt; cat &amp;gt; /etc/systemd/system/net-traffic-exporter.service &amp;lt;&amp;lt;EOF
 [Unit]
 Description=V2ray Iptables Traffic Exporter
 After=network-online.target
@@ -167,14 +167,14 @@ Wants=network-online.target
 
 [Service]
 User=root
-ExecStart=/usr/local/bin/v2ray-iptables-exporter --v2ray-endpoint 127.0.0.1:10085
+ExecStart=/usr/local/bin/net-traffic-exporter --v2ray-endpoint 127.0.0.1:10085
 
 [Install]
 WantedBy=multi-user.target
 EOF
 &amp;gt; systemctl daemon-reload
-&amp;gt; systemctl enable v2ray-iptables-exporter
-&amp;gt; systemctl start v2ray-iptables-exporter
+&amp;gt; systemctl enable net-traffic-exporter
+&amp;gt; systemctl start net-traffic-exporter
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;h2 id=&quot;grafana--promethus&quot;&gt;Grafana &amp;amp; Promethus&lt;/h2&gt;

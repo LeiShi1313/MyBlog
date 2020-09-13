@@ -170,10 +170,10 @@ Chain OUTPUT (policy ACCEPT 15543 packets, 9129206 bytes)
 <p>这是最简单的部分，因为我已经写好了，直接根据自己的平台到<a href="">这里</a>下载对应的binary，运行就可以了：</p>
 <blockquote>
  <p>注意这些操作都需要在root下运行</p>
-</blockquote><pre><code>&gt; wget -O /tmp/v2ray-iptables-exporter https://github.com/LeiShi1313/v2ray-iptables-exporter/releases/download/v0.5.0/v2ray-iptables-exporter_linux_386
-&gt; mv /tmp/v2ray-iptables-exporter /usr/local/bin
-&gt; chmod +x /usr/local/bin/v2ray-iptables-exporter
-&gt; nohup v2ray-iptables-exporter &gt; /dev/null 2&gt;&amp;1 &amp;
+</blockquote><pre><code>&gt; wget -O /tmp/net-traffic-exporter https://github.com/LeiShi1313/net-traffic-exporter/releases/download/v0.6.2/net-traffic-exporter_linux_amd64
+&gt; mv /tmp/net-traffic-exporter /usr/local/bin
+&gt; chmod +x /usr/local/bin/net-traffic-exporter
+&gt; nohup net-traffic-exporter &gt; /dev/null 2&gt;&amp;1 &amp;
 </code></pre>
 <p>测试一下node exporter是否正常运行：</p><pre><code>&gt; curl localhost:9550
 &lt;html&gt;
@@ -185,7 +185,7 @@ Chain OUTPUT (policy ACCEPT 15543 packets, 9129206 bytes)
 &lt;/body&gt;
 &lt;/html&gt;
 </code></pre>
-<h3 id="利用systemd更科学地管理node-exporter">利用systemd更科学地管理node exporter</h3><pre><code>&gt; cat &gt; /etc/systemd/system/v2ray-iptables-exporter.service &lt;&lt;EOF
+<h3 id="利用systemd更科学地管理node-exporter">利用systemd更科学地管理node exporter</h3><pre><code>&gt; cat &gt; /etc/systemd/system/net-traffic-exporter.service &lt;&lt;EOF
 [Unit]
 Description=V2ray Iptables Traffic Exporter
 After=network-online.target
@@ -193,14 +193,14 @@ Wants=network-online.target
 
 [Service]
 User=root
-ExecStart=/usr/local/bin/v2ray-iptables-exporter --v2ray-endpoint 127.0.0.1:10085
+ExecStart=/usr/local/bin/net-traffic-exporter --v2ray-endpoint 127.0.0.1:10085
 
 [Install]
 WantedBy=multi-user.target
 EOF
 &gt; systemctl daemon-reload
-&gt; systemctl enable v2ray-iptables-exporter
-&gt; systemctl start v2ray-iptables-exporter
+&gt; systemctl enable net-traffic-exporter
+&gt; systemctl start net-traffic-exporter
 </code></pre>
 <h2 id="grafana--promethus">Grafana &amp; Promethus</h2>
 <h3 id="启动服务">启动服务</h3>
