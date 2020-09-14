@@ -2,6 +2,17 @@
 
   
     {
+        "title": "利用Iptables对gost/socat/broo进行流量统计",
+        "category": "Readme",
+        "url": "https://blog.leishi.io/pages/readme/Monitoring-forwarded-traffic",
+        "tags": ["Grafana","Promethus","V2ray","Iptables"],
+        "date": "2020-08-13 20:00:00 -0700",
+        "language": "en"
+    },
+  
+
+  
+    {
         "title": "利用Grafana和Promethus搭建流量统计面板",
         "category": "Readme",
         "url": "https://blog.leishi.io/pages/readme/Making-A-Traffic-Panel-Using-Grafana-And-Promethus",

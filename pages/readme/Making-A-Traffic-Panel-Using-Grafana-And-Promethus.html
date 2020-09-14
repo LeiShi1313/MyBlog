@@ -65,7 +65,7 @@ gtag('config', 'UA-119177383-3');
 <img src="https://blog.leishi.io/assets/2020-08-08/v2ray_dashboard_slim.png" alt="" /></p>
 <h2 id="准备工作">准备工作</h2>
 <h3 id="开启v2ray统计功能">开启V2ray统计功能</h3>
-<p>修改V2ray的配置文件，一般位于<code>/etc/v2ray/config.json</code>或<code>/usr/local/etc/v2ray/config.json</code>，添加如下几行配置：</p><pre><code>{
+<p>修改V2ray的配置文件，一般位于<code>/etc/v2ray/config.json</code>或<code>/usr/local/etc/v2ray/config.json</code>，添加如下几行配置：</p><pre><code class="language-json">{
   ...
   "stats": {},
   "api": {
@@ -131,7 +131,7 @@ gtag('config', 'UA-119177383-3');
  <p>更多有关v2ray开启流量统计的设置可以参考<a href="https://guide.v2fly.org/advanced/traffic.html#%E6%B5%81%E9%87%8F%E7%BB%9F%E8%AE%A1">V2ray 白话文指南</a></p>
 </blockquote>
 <h3 id="开启iptables转发端口的流量统计">开启iptables转发端口的流量统计</h3>
-<p>首先先确定你的iptables端口转发是通过<code>SNAT/DNAT</code>来实现，如果没有的话，可以参考<strong>TODO</strong>自己添加统计功能。查看iptables的配置确认一下大概会看起来像这样：</p><pre><code>&gt; iptables -t nat -L
+<p>首先先确定你的iptables端口转发是通过<code>SNAT/DNAT</code>来实现，如果没有的话，可以参考<strong>TODO</strong>自己添加统计功能。查看iptables的配置确认一下大概会看起来像这样：</p><pre><code class="language-shell">&gt; iptables -t nat -L
 Chain PREROUTING (policy ACCEPT)
 target     prot opt source               destination
 DNAT       tcp  --  anywhere             anywhere             tcp dpt:11111 to:8.8.8.8:10000
@@ -146,12 +146,12 @@ Chain POSTROUTING (policy ACCEPT)
 target     prot opt source               destination
 SNAT       tcp  --  anywhere             8.8.8.8      tcp dpt:10000 to:192.168.1.1
 </code></pre>
-<p>定义本地端口为<code>PORT</code>，远端IP为<code>REMOTE_IP</code>，远端端口为<code>REMOTE_PORT</code>，再添加如下两条iptables规则：</p><pre><code>&gt; iptables -A FORWARD -p tcp -d REMOTE_IP --dport REMOTE_PORT -j ACCEPT -m comment --comment "UPLOAD PORT-&gt;REMOTE_IP:REMOTE_PORT"
+<p>定义本地端口为<code>PORT</code>，远端IP为<code>REMOTE_IP</code>，远端端口为<code>REMOTE_PORT</code>，再添加如下两条iptables规则：</p><pre><code class="language-shell">&gt; iptables -A FORWARD -p tcp -d REMOTE_IP --dport REMOTE_PORT -j ACCEPT -m comment --comment "UPLOAD PORT-&gt;REMOTE_IP:REMOTE_PORT"
 &gt; iptables -A FORWARD -p tcp -s REMOTE_IP -j ACCEPT -m comment --comment "DOWNLOAD PORT-&gt;REMOTE_IP:REMOTE_PORT"
 </code></pre>
-<p><code>--comment</code>里的内容特别重要，是用来区分流量的唯一依据，你也可以使用<a href="https://github.com/LeiShi1313/v2ray-iptables-exporter/blob/master/forward.sh">这个</a>脚本来添加端口转发，这个脚本会自动添加上述两条规则，用法：</p><pre><code>&gt; bash forward.sh PORT REMOTE_IP REMOTE_PORT
+<p><code>--comment</code>里的内容特别重要，是用来区分流量的唯一依据，你也可以使用<a href="https://github.com/LeiShi1313/v2ray-iptables-exporter/blob/master/forward.sh">这个</a>脚本来添加端口转发，这个脚本会自动添加上述两条规则，用法：</p><pre><code class="language-shell">&gt; bash forward.sh PORT REMOTE_IP REMOTE_PORT
 </code></pre>
-<p>检查一下统计功能：</p><pre><code>&gt; iptables -nxvL
+<p>检查一下统计功能：</p><pre><code class="language-shell">&gt; iptables -nxvL
 Chain INPUT (policy ACCEPT 19366 packets, 15977101 bytes)
     pkts      bytes target     prot opt in     out     source               destination
 
@@ -168,12 +168,12 @@ Chain OUTPUT (policy ACCEPT 15543 packets, 9129206 bytes)
 <p>这是最简单的部分，因为我已经写好了，直接根据自己的平台到<a href="">这里</a>下载对应的binary，运行就可以了：</p>
 <blockquote>
  <p>注意这些操作都需要在root下运行</p>
-</blockquote><pre><code>&gt; wget -O /tmp/net-traffic-exporter https://github.com/LeiShi1313/net-traffic-exporter/releases/download/v0.6.2/net-traffic-exporter_linux_amd64
+</blockquote><pre><code class="language-shell">&gt; wget -O /tmp/net-traffic-exporter https://github.com/LeiShi1313/net-traffic-exporter/releases/download/v0.6.2/net-traffic-exporter_linux_amd64
 &gt; mv /tmp/net-traffic-exporter /usr/local/bin
 &gt; chmod +x /usr/local/bin/net-traffic-exporter
 &gt; nohup net-traffic-exporter &gt; /dev/null 2&gt;&amp;1 &amp;
 </code></pre>
-<p>测试一下node exporter是否正常运行：</p><pre><code>&gt; curl localhost:9550
+<p>测试一下node exporter是否正常运行：</p><pre><code class="language-shell">&gt; curl localhost:9550
 &lt;html&gt;
 &lt;head&gt;&lt;title&gt;V2Ray Exporter&lt;/title&gt;&lt;/head&gt;
 &lt;body&gt;
@@ -183,7 +183,7 @@ Chain OUTPUT (policy ACCEPT 15543 packets, 9129206 bytes)
 &lt;/body&gt;
 &lt;/html&gt;
 </code></pre>
-<h3 id="利用systemd更科学地管理node-exporter">利用systemd更科学地管理node exporter</h3><pre><code>&gt; cat &gt; /etc/systemd/system/net-traffic-exporter.service &lt;&lt;EOF
+<h3 id="利用systemd更科学地管理node-exporter">利用systemd更科学地管理node exporter</h3><pre><code class="language-shell">&gt; cat &gt; /etc/systemd/system/net-traffic-exporter.service &lt;&lt;EOF
 [Unit]
 Description=V2ray Iptables Traffic Exporter
 After=network-online.target
@@ -202,10 +202,10 @@ EOF
 </code></pre>
 <h2 id="grafana--promethus">Grafana &amp; Promethus</h2>
 <h3 id="启动服务">启动服务</h3>
-<p>这一步也比较简单，使用docker-compose up -d就可以了，<code>docker-compose.yml</code>我也<a href="https://github.com/LeiShi1313/docker-composes/tree/master/grafana_promethus">写好了</a></p><pre><code>&gt; git clone https://github.com/LeiShi1313/docker-composes.git
+<p>这一步也比较简单，使用docker-compose up -d就可以了，<code>docker-compose.yml</code>我也<a href="https://github.com/LeiShi1313/docker-composes/tree/master/grafana_promethus">写好了</a></p><pre><code class="language-shell">&gt; git clone https://github.com/LeiShi1313/docker-composes.git
 &gt; cd docker-composes/grafana_promethus
 </code></pre>
-<p>首先编辑下<code>promethus.yml</code>:</p><pre><code>global:
+<p>首先编辑下<code>promethus.yml</code>:</p><pre><code class="language-yaml">global:
   scrape_interval: 10s
 
 - job_name: v2ray
@@ -220,9 +220,11 @@ EOF
 <img src="https://blog.leishi.io/assets/2020-08-08/grafana_import.png" alt="" /></p>
 <p>然后在<code>Import via panel json</code>里复制粘贴<a href="https://github.com/LeiShi1313/v2ray-iptables-exporter/blob/master/dashboard.json">这里</a>的内容，随便起个名字，点击<code>Import</code>就可以了</p>
 <h2 id="进阶玩法">进阶玩法</h2>
+<h3 id="监控gostsocatbrook中转的流量">监控gost，socat,brook中转的流量</h3>
+<p><a href="/pages/readme/Monitoring-forwarded-traffic.html">请移步</a></p>
 <h3 id="添加离线报警超速警告">添加离线报警，超速警告</h3>
 <p><a href="./404.html">TODO</a></p>
-<h3 id="监控socatgost等等">监控socat，gost等等</h3>
+<h3 id="修改exporter监控其他metrics">修改exporter，监控其他metrics</h3>
 <p><a href="./404.html">TODO</a></p>
        </section>
        <footer class="post-footer">

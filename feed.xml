@@ -5,9 +5,114 @@
     <description>This is the jekyllTheme example blog. It only exists to demonstrate how the theme looks and feels.</description>
     <link>https://blog.leishi.io/</link>
     <atom:link href="https://blog.leishi.io/feed.xml" rel="self" type="application/rss+xml"/>
-      <pubDate>Sun, 13 Sep 2020 01:58:24 -0700</pubDate>
-    <lastBuildDate>Sun, 13 Sep 2020 01:58:24 -0700</lastBuildDate>
+      <pubDate>Sun, 13 Sep 2020 21:20:13 -0700</pubDate>
+    <lastBuildDate>Sun, 13 Sep 2020 21:20:13 -0700</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
+    
+      <item>
+        <title>利用Iptables对gost/socat/broo进行流量统计</title>
+        <description>&lt;p&gt;除了使用iptables来进行端口转发，很多人会使用各种软件来进行中转，例如&lt;a href=&quot;https://github.com/ginuerzh/gost&quot;&gt;gost&lt;/a&gt;，socat，&lt;a href=&quot;https://github.com/txthinking/brook&quot;&gt;brook&lt;/a&gt;。有的自带流量统计，有的没有，但都可以通过iptables实现流量统计，配合&lt;a href=&quot;https://blog.leishi.io/pages/readme/Making-A-Traffic-Panel-Using-Grafana-And-Promethus&quot;&gt;Grafana+Prometheus&lt;/a&gt;，可以做出好看的流量统计面板。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://blog.leishi.io/assets/2020-08-13/v2ray_iptables.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;添加iptables规则&quot;&gt;添加iptables规则&lt;/h2&gt;
+
+&lt;p&gt;首先查看下默认网卡的绑定的ip：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-shell&quot;&gt;# 查看默认网卡
+ip route show | grep default | awk '{print $5}'
+# 假设默认网卡为eth0，查看其绑定的ip
+ip address show eth0 scope global |  awk '/inet / {split($2,var,&quot;/&quot;); print var[1]}'
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;假设中转的规则是&lt;code&gt;443-&amp;gt;8.8.8.9:444&lt;/code&gt;，假设默认网卡绑定的ip是&lt;code&gt;8.8.8.8&lt;/code&gt;，添加如下两条规则就可以让iptables显示经过这条中转规则的流量：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-shell&quot;&gt;export INET=8.8.8.8
+export LOCAL_PORT=443
+export REMOTE_IP=8.8.8.9
+export REMOTE_PORT=444
+iptables -A INPUT -p tcp -d $INET --dport $LOCAL_PORT -m comment --comment &quot;UPLOAD $LOCAL_PORT-&amp;gt;$REMOTE_IP:$REMOTE_PORT&quot;
+iptables -A INPUT -p tcp -s $REMOTE_IP -d $INET -m comment --comment &quot;DOWNLOAD $LOCAL_PORT-&amp;gt;$REMOTE_IP:$REMOTE_PORT&quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;运行&lt;code&gt;iptables -nxvL&lt;/code&gt;查看一下流量统计有没有起作用&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;如果不想自己手写iptables规则，也可以用我写的&lt;a href=&quot;https://raw.githubusercontent.com/LeiShi1313/net-traffic-exporter/master/iptables.sh&quot;&gt;脚本&lt;/a&gt;：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-shell&quot;&gt;bash iptables monitor LOCAL_PORT REMOTE_IP REMOTE_PORT
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;grafanapromethus流量统计面板&quot;&gt;Grafana+Promethus流量统计面板&lt;/h2&gt;
+
+&lt;p&gt;见&lt;a href=&quot;https://blog.leishi.io/pages/readme/Making-A-Traffic-Panel-Using-Grafana-And-Promethus&quot;&gt;前文&lt;/a&gt;，如果已经全部搭好，应该已经可以看到经过的流量了。下面我分别用gost/socat/brook来试试看流量统计的效果。&lt;/p&gt;
+
+&lt;h3 id=&quot;gost&quot;&gt;gost&lt;/h3&gt;
+&lt;p&gt;首先我在&lt;code&gt;sj0.leishi.io&lt;/code&gt;上搭建个&lt;code&gt;ws+tls&lt;/code&gt;的v2ray节点，然后通过&lt;code&gt;la0.leishi.io&lt;/code&gt;来中转：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-shell&quot;&gt;lei@la0:~$ gost -L tcp://:10003/sj0.leishi.io:443
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;添加流量统计的iptables规则，查看有没有生效：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-shell&quot;&gt;lei@la0:~$ bash iptables monitor 10003 193.160.32.136 443
+lei@la0:~$ sudo iptables -nvxL
+Chain INPUT (policy ACCEPT 0 packets, 0 bytes)
+    pkts      bytes target     prot opt in     out     source               destination
+       0        0            tcp  --  *      *       0.0.0.0/0            107.175.63.10        tcp dpt:10003 /* UPLOAD 10003-&amp;gt;193.160.32.136:443 */
+       0        0            tcp  --  *      *       193.160.32.136       107.175.63.10        tcp spt:443 /* DOWNLOAD 10003-&amp;gt;193.160.32.136:443 */
+
+Chain FORWARD (policy ACCEPT 0 packets, 0 bytes)
+    pkts      bytes target     prot opt in     out     source               destination
+
+Chain OUTPUT (policy ACCEPT 0 packets, 0 bytes)
+    pkts      bytes target     prot opt in     out     source               destination
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;测试v2ray是否能连接
+&lt;img src=&quot;https://blog.leishi.io/assets/2020-08-13/Screenshot_20200913_204332.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;测两次速看看统计的效果，&lt;code&gt;la0 download/upload&lt;/code&gt;是iptables的流量，&lt;code&gt;sj0 download/upload&lt;/code&gt;是v2ray自带的流量统计功能：
+&lt;img src=&quot;https://blog.leishi.io/assets/2020-08-13/la0_sj0_gost.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;socat&quot;&gt;socat&lt;/h3&gt;
+
+&lt;p&gt;再试试socat&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-shell&quot;&gt;lei@la0:~$ socat TCP4-LISTEN:10003,reuseaddr,fork TCP4:193.160.32.136:443
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;同样测两次速看看：
+&lt;img src=&quot;https://blog.leishi.io/assets/2020-08-13/la0_sj0_socat.png&quot; alt=&quot;&quot; /&gt;
+可以看到两端的流量统计基本符合&lt;/p&gt;
+
+&lt;h3 id=&quot;brook&quot;&gt;brook&lt;/h3&gt;
+
+&lt;p&gt;我们再试试看brook中转的流量统计：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-shell&quot;&gt;lei@la0:~$ brook relay -f :10003 -t sj0.leishi.io:443
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;注意，如果使用的是一键脚本，可能已经有添加iptables规则，删除即可&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;测两次速，再看一眼流量统计：
+&lt;img src=&quot;https://blog.leishi.io/assets/2020-08-13/la0_sj0_brook.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;总结&quot;&gt;总结&lt;/h2&gt;
+&lt;p&gt;如上的iptables规则能很好地用来统计中转的流量，配合Grafana搭建的面板，能够实时地查看服务器上各个端口的流量情况。&lt;/p&gt;
+</description>
+        <pubDate>Thu, 13 Aug 2020 20:00:00 -0700</pubDate>
+        <link>https://blog.leishi.io/pages/readme/Monitoring-forwarded-traffic</link>
+        <guid isPermaLink="true">https://blog.leishi.io/pages/readme/Monitoring-forwarded-traffic</guid>
+        
+        <category>Grafana</category>
+        
+        <category>Promethus</category>
+        
+        <category>V2ray</category>
+        
+        <category>Iptables</category>
+        
+        
+        <category>Readme</category>
+        
+      </item>
     
       <item>
         <title>利用Grafana和Promethus搭建流量统计面板</title>
@@ -20,7 +125,7 @@
 
 &lt;p&gt;修改V2ray的配置文件，一般位于&lt;code&gt;/etc/v2ray/config.json&lt;/code&gt;或&lt;code&gt;/usr/local/etc/v2ray/config.json&lt;/code&gt;，添加如下几行配置：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;{
+&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;{
   ...
   &quot;stats&quot;: {},
   &quot;api&quot;: {
@@ -92,7 +197,7 @@
 &lt;h3 id=&quot;开启iptables转发端口的流量统计&quot;&gt;开启iptables转发端口的流量统计&lt;/h3&gt;
 
 &lt;p&gt;首先先确定你的iptables端口转发是通过&lt;code&gt;SNAT/DNAT&lt;/code&gt;来实现，如果没有的话，可以参考&lt;strong&gt;TODO&lt;/strong&gt;自己添加统计功能。查看iptables的配置确认一下大概会看起来像这样：&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;&amp;gt; iptables -t nat -L
+&lt;pre&gt;&lt;code class=&quot;language-shell&quot;&gt;&amp;gt; iptables -t nat -L
 Chain PREROUTING (policy ACCEPT)
 target     prot opt source               destination
 DNAT       tcp  --  anywhere             anywhere             tcp dpt:11111 to:8.8.8.8:10000
@@ -109,15 +214,16 @@ SNAT       tcp  --  anywhere             8.8.8.8      tcp dpt:10000 to:192.168.1
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;定义本地端口为&lt;code&gt;PORT&lt;/code&gt;，远端IP为&lt;code&gt;REMOTE_IP&lt;/code&gt;，远端端口为&lt;code&gt;REMOTE_PORT&lt;/code&gt;，再添加如下两条iptables规则：&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;&amp;gt; iptables -A FORWARD -p tcp -d REMOTE_IP --dport REMOTE_PORT -j ACCEPT -m comment --comment &quot;UPLOAD PORT-&amp;gt;REMOTE_IP:REMOTE_PORT&quot;
+&lt;pre&gt;&lt;code class=&quot;language-shell&quot;&gt;&amp;gt; iptables -A FORWARD -p tcp -d REMOTE_IP --dport REMOTE_PORT -j ACCEPT -m comment --comment &quot;UPLOAD PORT-&amp;gt;REMOTE_IP:REMOTE_PORT&quot;
 &amp;gt; iptables -A FORWARD -p tcp -s REMOTE_IP -j ACCEPT -m comment --comment &quot;DOWNLOAD PORT-&amp;gt;REMOTE_IP:REMOTE_PORT&quot;
 &lt;/code&gt;&lt;/pre&gt;
+
 &lt;p&gt;&lt;code&gt;--comment&lt;/code&gt;里的内容特别重要，是用来区分流量的唯一依据，你也可以使用&lt;a href=&quot;https://github.com/LeiShi1313/v2ray-iptables-exporter/blob/master/forward.sh&quot;&gt;这个&lt;/a&gt;脚本来添加端口转发，这个脚本会自动添加上述两条规则，用法：&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;&amp;gt; bash forward.sh PORT REMOTE_IP REMOTE_PORT
+&lt;pre&gt;&lt;code class=&quot;language-shell&quot;&gt;&amp;gt; bash forward.sh PORT REMOTE_IP REMOTE_PORT
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;检查一下统计功能：&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;&amp;gt; iptables -nxvL
+&lt;pre&gt;&lt;code class=&quot;language-shell&quot;&gt;&amp;gt; iptables -nxvL
 Chain INPUT (policy ACCEPT 19366 packets, 15977101 bytes)
     pkts      bytes target     prot opt in     out     source               destination
 
@@ -139,14 +245,14 @@ Chain OUTPUT (policy ACCEPT 15543 packets, 9129206 bytes)
   &lt;p&gt;注意这些操作都需要在root下运行&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;pre&gt;&lt;code&gt;&amp;gt; wget -O /tmp/net-traffic-exporter https://github.com/LeiShi1313/net-traffic-exporter/releases/download/v0.6.2/net-traffic-exporter_linux_amd64
+&lt;pre&gt;&lt;code class=&quot;language-shell&quot;&gt;&amp;gt; wget -O /tmp/net-traffic-exporter https://github.com/LeiShi1313/net-traffic-exporter/releases/download/v0.6.2/net-traffic-exporter_linux_amd64
 &amp;gt; mv /tmp/net-traffic-exporter /usr/local/bin
 &amp;gt; chmod +x /usr/local/bin/net-traffic-exporter
 &amp;gt; nohup net-traffic-exporter &amp;gt; /dev/null 2&amp;gt;&amp;amp;1 &amp;amp;
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;测试一下node exporter是否正常运行：&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;&amp;gt; curl localhost:9550
+&lt;pre&gt;&lt;code class=&quot;language-shell&quot;&gt;&amp;gt; curl localhost:9550
 &amp;lt;html&amp;gt;
 &amp;lt;head&amp;gt;&amp;lt;title&amp;gt;V2Ray Exporter&amp;lt;/title&amp;gt;&amp;lt;/head&amp;gt;
 &amp;lt;body&amp;gt;
@@ -159,7 +265,7 @@ Chain OUTPUT (policy ACCEPT 15543 packets, 9129206 bytes)
 
 &lt;h3 id=&quot;利用systemd更科学地管理node-exporter&quot;&gt;利用systemd更科学地管理node exporter&lt;/h3&gt;
 
-&lt;pre&gt;&lt;code&gt;&amp;gt; cat &amp;gt; /etc/systemd/system/net-traffic-exporter.service &amp;lt;&amp;lt;EOF
+&lt;pre&gt;&lt;code class=&quot;language-shell&quot;&gt;&amp;gt; cat &amp;gt; /etc/systemd/system/net-traffic-exporter.service &amp;lt;&amp;lt;EOF
 [Unit]
 Description=V2ray Iptables Traffic Exporter
 After=network-online.target
@@ -183,11 +289,12 @@ EOF
 
 &lt;p&gt;这一步也比较简单，使用docker-compose up -d就可以了，&lt;code&gt;docker-compose.yml&lt;/code&gt;我也&lt;a href=&quot;https://github.com/LeiShi1313/docker-composes/tree/master/grafana_promethus&quot;&gt;写好了&lt;/a&gt;&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;&amp;gt; git clone https://github.com/LeiShi1313/docker-composes.git
+&lt;pre&gt;&lt;code class=&quot;language-shell&quot;&gt;&amp;gt; git clone https://github.com/LeiShi1313/docker-composes.git
 &amp;gt; cd docker-composes/grafana_promethus
 &lt;/code&gt;&lt;/pre&gt;
+
 &lt;p&gt;首先编辑下&lt;code&gt;promethus.yml&lt;/code&gt;:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;global:
+&lt;pre&gt;&lt;code class=&quot;language-yaml&quot;&gt;global:
   scrape_interval: 10s
 
 - job_name: v2ray
@@ -208,10 +315,13 @@ EOF
 
 &lt;h2 id=&quot;进阶玩法&quot;&gt;进阶玩法&lt;/h2&gt;
 
+&lt;h3 id=&quot;监控gostsocatbrook中转的流量&quot;&gt;监控gost，socat,brook中转的流量&lt;/h3&gt;
+&lt;p&gt;&lt;a href=&quot;/pages/readme/Monitoring-forwarded-traffic.html&quot;&gt;请移步&lt;/a&gt;&lt;/p&gt;
+
 &lt;h3 id=&quot;添加离线报警超速警告&quot;&gt;添加离线报警，超速警告&lt;/h3&gt;
 &lt;p&gt;&lt;a href=&quot;./404.html&quot;&gt;TODO&lt;/a&gt;&lt;/p&gt;
 
-&lt;h3 id=&quot;监控socatgost等等&quot;&gt;监控socat，gost等等&lt;/h3&gt;
+&lt;h3 id=&quot;修改exporter监控其他metrics&quot;&gt;修改exporter，监控其他metrics&lt;/h3&gt;
 &lt;p&gt;&lt;a href=&quot;./404.html&quot;&gt;TODO&lt;/a&gt;&lt;/p&gt;
 </description>
         <pubDate>Sat, 08 Aug 2020 20:00:00 -0700</pubDate>
