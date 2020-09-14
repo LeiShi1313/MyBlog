@@ -16,7 +16,7 @@ featured:          true
 
 修改V2ray的配置文件，一般位于`/etc/v2ray/config.json`或`/usr/local/etc/v2ray/config.json`，添加如下几行配置：
 
-```
+```json
 {
   ...
   "stats": {},
@@ -84,7 +84,7 @@ featured:          true
 ### 开启iptables转发端口的流量统计
 
 首先先确定你的iptables端口转发是通过`SNAT/DNAT`来实现，如果没有的话，可以参考**TODO**自己添加统计功能。查看iptables的配置确认一下大概会看起来像这样：
-```
+```shell
 > iptables -t nat -L
 Chain PREROUTING (policy ACCEPT)
 target     prot opt source               destination
@@ -102,17 +102,18 @@ SNAT       tcp  --  anywhere             8.8.8.8      tcp dpt:10000 to:192.168.1
 ```
 
 定义本地端口为`PORT`，远端IP为`REMOTE_IP`，远端端口为`REMOTE_PORT`，再添加如下两条iptables规则：
-```
+```shell
 > iptables -A FORWARD -p tcp -d REMOTE_IP --dport REMOTE_PORT -j ACCEPT -m comment --comment "UPLOAD PORT->REMOTE_IP:REMOTE_PORT"
 > iptables -A FORWARD -p tcp -s REMOTE_IP -j ACCEPT -m comment --comment "DOWNLOAD PORT->REMOTE_IP:REMOTE_PORT"
 ```
+
 `--comment`里的内容特别重要，是用来区分流量的唯一依据，你也可以使用[这个](https://github.com/LeiShi1313/v2ray-iptables-exporter/blob/master/forward.sh)脚本来添加端口转发，这个脚本会自动添加上述两条规则，用法：
-```
+```shell
 > bash forward.sh PORT REMOTE_IP REMOTE_PORT
 ```
 
 检查一下统计功能：
-```
+```shell
 > iptables -nxvL
 Chain INPUT (policy ACCEPT 19366 packets, 15977101 bytes)
     pkts      bytes target     prot opt in     out     source               destination
@@ -134,7 +135,7 @@ Chain OUTPUT (policy ACCEPT 15543 packets, 9129206 bytes)
 
 > 注意这些操作都需要在root下运行
 
-```
+```shell
 > wget -O /tmp/net-traffic-exporter https://github.com/LeiShi1313/net-traffic-exporter/releases/download/v0.6.2/net-traffic-exporter_linux_amd64
 > mv /tmp/net-traffic-exporter /usr/local/bin
 > chmod +x /usr/local/bin/net-traffic-exporter
@@ -143,7 +144,7 @@ Chain OUTPUT (policy ACCEPT 15543 packets, 9129206 bytes)
 
 
 测试一下node exporter是否正常运行：
-```
+```shell
 > curl localhost:9550
 <html>
 <head><title>V2Ray Exporter</title></head>
@@ -157,7 +158,7 @@ Chain OUTPUT (policy ACCEPT 15543 packets, 9129206 bytes)
 
 ### 利用systemd更科学地管理node exporter
 
-```
+```shell
 > cat > /etc/systemd/system/net-traffic-exporter.service <<EOF
 [Unit]
 Description=V2ray Iptables Traffic Exporter
@@ -182,12 +183,13 @@ EOF
 
 这一步也比较简单，使用docker-compose up -d就可以了，`docker-compose.yml`我也[写好了](https://github.com/LeiShi1313/docker-composes/tree/master/grafana_promethus)
 
-```
+```shell
 > git clone https://github.com/LeiShi1313/docker-composes.git
 > cd docker-composes/grafana_promethus
 ```
+
 首先编辑下`promethus.yml`:
-```
+```yaml
 global:
   scrape_interval: 10s
 
@@ -210,8 +212,11 @@ global:
 
 ## 进阶玩法
 
+### 监控gost，socat,brook中转的流量
+[请移步](/pages/readme/Monitoring-forwarded-traffic.html)
+
 ### 添加离线报警，超速警告
 [TODO](./404.html)
 
-### 监控socat，gost等等
+### 修改exporter，监控其他metrics
 [TODO](./404.html)
