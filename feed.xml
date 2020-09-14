@@ -5,12 +5,12 @@
     <description>This is the jekyllTheme example blog. It only exists to demonstrate how the theme looks and feels.</description>
     <link>https://blog.leishi.io/</link>
     <atom:link href="https://blog.leishi.io/feed.xml" rel="self" type="application/rss+xml"/>
-      <pubDate>Sun, 13 Sep 2020 21:20:13 -0700</pubDate>
-    <lastBuildDate>Sun, 13 Sep 2020 21:20:13 -0700</lastBuildDate>
+      <pubDate>Sun, 13 Sep 2020 21:22:51 -0700</pubDate>
+    <lastBuildDate>Sun, 13 Sep 2020 21:22:51 -0700</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
     
       <item>
-        <title>利用Iptables对gost/socat/broo进行流量统计</title>
+        <title>利用Iptables对gost/socat/brook进行流量统计</title>
         <description>&lt;p&gt;除了使用iptables来进行端口转发，很多人会使用各种软件来进行中转，例如&lt;a href=&quot;https://github.com/ginuerzh/gost&quot;&gt;gost&lt;/a&gt;，socat，&lt;a href=&quot;https://github.com/txthinking/brook&quot;&gt;brook&lt;/a&gt;。有的自带流量统计，有的没有，但都可以通过iptables实现流量统计，配合&lt;a href=&quot;https://blog.leishi.io/pages/readme/Making-A-Traffic-Panel-Using-Grafana-And-Promethus&quot;&gt;Grafana+Prometheus&lt;/a&gt;，可以做出好看的流量统计面板。&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://blog.leishi.io/assets/2020-08-13/v2ray_iptables.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;

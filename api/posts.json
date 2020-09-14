@@ -2,7 +2,7 @@
 
   
     {
-        "title": "利用Iptables对gost/socat/broo进行流量统计",
+        "title": "利用Iptables对gost/socat/brook进行流量统计",
         "category": "Readme",
         "url": "https://blog.leishi.io/pages/readme/Monitoring-forwarded-traffic",
         "tags": ["Grafana","Promethus","V2ray","Iptables"],
